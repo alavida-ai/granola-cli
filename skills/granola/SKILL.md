@@ -21,9 +21,10 @@ Trigger when the user asks anything about meetings or call notes:
 
 ## How this skill is organised
 
-- [`./references/auth.md`](./references/auth.md) — first-time setup. The user generates an API key in the Granola desktop app and exposes it as `GRANOLA_API_KEY`. Read this when `granola whoami` exits 1 or any command says "Not authenticated".
 - [`./references/notes.md`](./references/notes.md) — `granola notes list | read`. List filters, the markdown vs text summary distinction, transcript inclusion.
 - [`./references/folders.md`](./references/folders.md) — `granola folders list`. Folder hierarchy via `parent_folder_id`.
+
+If `granola whoami` ever exits 1 with `GRANOLA_API_KEY not set`, the deployment is missing the env var — that's an operator/deployer fix, not an agent fix. Relay the CLI's stderr message to the user and point them at the [README](https://github.com/alavida-ai/granola-cli#openclaw-deployment) for setup.
 
 ## Quick reference
 
