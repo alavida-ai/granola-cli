@@ -6,7 +6,7 @@ from collections import Counter
 from typing import Annotated
 
 import typer
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from granola_cli import client
 from granola_cli.commands import folders, notes, skill
@@ -17,7 +17,10 @@ from granola_cli.commands._common import (
     print_json,
 )
 
-load_dotenv()
+# Search upward from the user's CWD, not from this module's site-packages location.
+# Default `load_dotenv()` walks from the importer file, which lands in site-packages
+# for a `uv tool install`'d binary and never finds the user's project .env.
+load_dotenv(find_dotenv(usecwd=True))
 
 app = typer.Typer(
     name="granola",

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import sys
 from contextlib import contextmanager
 from importlib.resources import as_file, files
 from pathlib import Path
@@ -192,10 +193,13 @@ def path(
       --bundled (default)  the bundled skill source inside the installed wheel
       --installed          the on-disk install destination (uses same resolution as `install`)
     """
+    # Path output goes to stdout (it IS the data) and bypasses Rich console
+    # so long paths aren't wrapped with embedded newlines. Lets shell scripts do
+    # things like  `cd "$(granola skill path --installed)"`  safely.
     if bundled:
         with _bundled_skill_path() as src_path:
-            err_console.print(str(src_path))
+            sys.stdout.write(f"{src_path}\n")
         return
 
     dest = _resolve_target(workspace, target)
-    err_console.print(str(dest))
+    sys.stdout.write(f"{dest}\n")
