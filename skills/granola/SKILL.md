@@ -2,7 +2,7 @@
 name: granola
 description: Granola — read meeting notes, AI summaries, transcripts, and folder structure from Granola.ai. Use whenever the user asks about meetings, what was discussed, who said what, or summaries of recent calls.
 homepage: https://github.com/alavida-ai/granola-cli
-metadata: {"openclaw":{"emoji":"🥣","homepage":"https://github.com/alavida-ai/granola-cli","os":["darwin","linux"],"requires":{"bins":["granola"]},"install":[{"id":"uv","kind":"uv","package":"git+https://github.com/alavida-ai/granola-cli","bins":["granola"],"label":"Install granola-cli (uv)"}]}}
+metadata: {"openclaw":{"emoji":"🥣","homepage":"https://github.com/alavida-ai/granola-cli","os":["darwin","linux"],"requires":{"bins":["granola"],"env":["GRANOLA_API_KEY"]},"primaryEnv":"GRANOLA_API_KEY","install":[{"id":"uv","kind":"uv","package":"git+https://github.com/alavida-ai/granola-cli","bins":["granola"],"label":"Install granola-cli (uv)"}]}}
 ---
 
 # Granola
