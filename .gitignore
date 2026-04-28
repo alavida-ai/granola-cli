@@ -1,0 +1,28 @@
+.venv/
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+
+# secrets — never commit
+.env
+.env.local
+
+# local research / scratch
+.firecrawl/
+.DS_Store
+
+# secrets & local state
+.env
+.env.local
+.granola-cli/
+
+# editors
+.vscode/
+.idea/
+.DS_Store
