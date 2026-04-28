@@ -79,6 +79,82 @@ This matches the convention for `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, GitHub PA
 
 The key works until the user revokes it in the desktop app.
 
+## OpenClaw deployment
+
+The bundled skill declares `GRANOLA_API_KEY` in its OpenClaw metadata (`requires.env` for load-time gating, `primaryEnv` to mark it as the skill's primary credential). OpenClaw will skip-load the skill if the key isn't reachable.
+
+The credential gets wired in via `~/.openclaw/openclaw.json` under `skills.entries.granola.apiKey`. Pick the shape based on threat model — personal vs production.
+
+### Personal / single-operator (plaintext)
+
+For your own VPS or laptop where you're the only operator, inline the key directly. The plaintext-on-disk risk is identical to a `.env` and the simplicity is worth it:
+
+```json5
+{
+  skills: {
+    entries: {
+      granola: {
+        enabled: true,
+        apiKey: "grn_xxxxxxxxxxxxx"
+      }
+    }
+  }
+}
+```
+
+```bash
+chmod 600 ~/.openclaw/openclaw.json    # owner-only read/write — no other user on the box can read the file
+openclaw gateway restart               # gateway reloads ~/.openclaw/openclaw.json on restart
+openclaw skills list                   # confirm 'granola' is loaded
+```
+
+`chmod 600` sets Unix permissions to `rw-------` — only the file's owner can read or write it. Default is usually `644` (`rw-r--r--`, world-readable). Locking down config files that hold secrets is standard hygiene on any multi-user host.
+
+### Production / client work (SecretRef)
+
+For deployments where the secret should live in a real secret manager (AWS Secrets Manager, GCP Secret Manager, HashiCorp Vault, Fly secrets, etc.) and never in plaintext on disk, use the SecretRef form:
+
+```json5
+{
+  skills: {
+    entries: {
+      granola: {
+        enabled: true,
+        apiKey: { source: "env", provider: "default", id: "GRANOLA_API_KEY" }
+      }
+    }
+  }
+}
+```
+
+This tells OpenClaw to read `GRANOLA_API_KEY` from its own process environment at runtime — `openclaw.json` itself never holds the secret. The actual value comes from your deployment's standard secret-injection path:
+
+| Deployment | Inject `GRANOLA_API_KEY` via |
+|---|---|
+| systemd | `EnvironmentFile=/etc/openclaw/secrets.env` in the unit's `[Service]` block; the file is `chmod 600` and owned by root |
+| Fly.io | `fly secrets set GRANOLA_API_KEY=grn_...` (then redeploy) |
+| Docker / compose | `environment:` block with `${GRANOLA_API_KEY}`, value from host env or a Docker secret |
+| AWS EC2 + Secrets Manager | Boot script (cloud-init / launch template) fetches → writes to the systemd `EnvironmentFile` referenced above |
+| Kubernetes | `Secret` mounted as env via `envFrom: secretRef:` on the OpenClaw pod spec |
+
+### Sandbox caveat
+
+If OpenClaw runs skills inside a Docker sandbox (`agents.defaults.sandbox.backend: "docker"`), the `apiKey` resolution only applies to *host* runs — sandbox processes don't inherit the host env. You'll also need:
+
+```json5
+agents: {
+  defaults: {
+    sandbox: {
+      docker: {
+        env: { GRANOLA_API_KEY: "grn_xxxxxxxxxxxxx" }
+      }
+    }
+  }
+}
+```
+
+Or bake the value into your custom sandbox image. Most personal setups don't sandbox skills, so this is rarely needed.
+
 ## Develop
 
 ```bash

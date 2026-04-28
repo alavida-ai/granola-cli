@@ -19,7 +19,21 @@ Granola uses a static Bearer API key. There's no OAuth, no device-code flow, no 
 
    **Shell** — `export GRANOLA_API_KEY=grn_xxx` in your `~/.zshrc` / `~/.bashrc`.
 
-   **Production (EC2 / k8s / Lambda)** — pull the key from your secret manager (AWS Secrets Manager, AWS Parameter Store, GCP Secret Manager, HashiCorp Vault, Doppler, etc.) and inject it as `GRANOLA_API_KEY` at process start. This is the canonical deployment path — agents never see the key on disk.
+   **OpenClaw** — wire via `~/.openclaw/openclaw.json`. The skill declares `primaryEnv: "GRANOLA_API_KEY"` in its metadata, so OpenClaw's canonical place is `skills.entries.granola.apiKey`. Two shapes:
+
+   ```json5
+   // Personal / single-operator: plaintext on disk, chmod 600 the file
+   skills: { entries: { granola: { enabled: true,
+     apiKey: "grn_xxxxxxxxxxxxx"
+   }}}
+
+   // Production: SecretRef — value lives in host process env, openclaw.json never holds it
+   skills: { entries: { granola: { enabled: true,
+     apiKey: { source: "env", provider: "default", id: "GRANOLA_API_KEY" }
+   }}}
+   ```
+
+   **Production (EC2 / k8s / Lambda / Fly)** — pull the key from your secret manager (AWS Secrets Manager, GCP Secret Manager, HashiCorp Vault, Fly secrets, etc.) and inject it as `GRANOLA_API_KEY` at process start. Pair with the SecretRef form above so `openclaw.json` never holds the secret. See the [README → OpenClaw deployment section](https://github.com/alavida-ai/granola-cli#openclaw-deployment) for shape-by-shape examples.
 
 ## Verify
 
@@ -66,8 +80,10 @@ GRANOLA_API_BASE=https://staging-api.granola.ai   # rarely needed
 
 ## Agent pattern for first-time onboarding
 
-Don't paste the key over Slack or email. Tell the user:
+Don't paste the key over Slack or email. Tell the user where to put it based on how the agent runs:
 
-> "Open the Granola desktop app → Settings → API → Create new key. Then add `GRANOLA_API_KEY=grn_xxx` to your `.env` file (or export it in your shell). Run `granola whoami` to verify."
+- **Local dev (Claude Code, plain shell):** "Open the Granola desktop app → Settings → API → Create new key. Then add `GRANOLA_API_KEY=grn_xxx` to your `.env` file. Run `granola whoami` to verify."
+- **OpenClaw on a personal VPS:** "Add it to `~/.openclaw/openclaw.json` under `skills.entries.granola.apiKey`, `chmod 600 ~/.openclaw/openclaw.json`, then `openclaw gateway restart`."
+- **OpenClaw production (client work):** point the deployer at their secret manager — the OpenClaw process needs `GRANOLA_API_KEY` in its env, then `openclaw.json` references it via `apiKey: { source: "env", id: "GRANOLA_API_KEY" }`.
 
-For headless / production agents, point the deployer at their secret manager — the agent process expects `GRANOLA_API_KEY` to be present at startup, period.
+If `granola whoami` exits with `GRANOLA_API_KEY not set`, the var didn't reach the process — check the rung above (env-var injection) before assuming the key is wrong.
