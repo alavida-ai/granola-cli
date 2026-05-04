@@ -34,31 +34,28 @@ You need a personal access token (PAT) with `read:packages` scope.
 
    `chmod 600` makes the file owner-only readable — the PAT is a long-lived secret, treat it like one.
 
+### Prerequisites (one-time per host, before installing the plugin)
+
+The plugin loads the granola skill, which calls the `granola` host CLI. That CLI must be present and able to authenticate.
+
+```bash
+# 1. Install the granola host CLI (Python tool, ~10 seconds)
+uv tool install git+https://github.com/alavida-ai/granola-cli
+
+# 2. Wire GRANOLA_API_KEY into ~/.openclaw/openclaw.json
+#    See the granola README's "OpenClaw deployment" section for both shapes —
+#    personal-plaintext and production-SecretRef. Pick one, edit the file,
+#    chmod 600 ~/.openclaw/openclaw.json (only needed for plaintext).
+```
+
 ### Install
 
 ```bash
-# 1. Install the plugin (npm scheme — pulls from GitHub Packages via the ~/.npmrc above)
-openclaw plugins install npm:@alavida-ai/granola-openclaw
+# Install the plugin from GitHub Packages (resolves via ~/.npmrc above)
+openclaw plugins install @alavida-ai/granola-openclaw
 
-# 2. Run the setup script (installs granola CLI on host + checks GRANOLA_API_KEY)
-cd ~/.openclaw/plugins/granola   # path may vary
-npx tsx src/setup-entry.ts
-
-# 3. Wire GRANOLA_API_KEY into the gateway (see the granola README's
-#    "OpenClaw deployment" section for personal vs production shapes)
-```
-
-The setup script is idempotent — rerun it any time. It will:
-
-- check for the `granola` binary and offer to `uv tool install` it
-- confirm `GRANOLA_API_KEY` is set in the current process environment
-- print clear instructions if either piece is missing
-
-### Setup script flags
-
-```
---no-install        Skip the granola CLI install check
---dry-run           Print intended actions without changing anything
+# Restart the gateway so the plugin and skill are picked up
+openclaw gateway restart
 ```
 
 ### Updating
@@ -67,9 +64,9 @@ The setup script is idempotent — rerun it any time. It will:
 openclaw plugins update @alavida-ai/granola-openclaw
 # or update everything at once:
 openclaw plugins update --all
-```
 
-Then `openclaw gateway restart` to pick up the new code.
+openclaw gateway restart
+```
 
 ## Verification
 
@@ -99,12 +96,14 @@ plugins/openclaw/
 ├── openclaw.plugin.json      # OpenClaw plugin manifest
 ├── tsconfig.json
 ├── src/
-│   ├── index.ts              # definePluginEntry — plugin metadata
-│   └── setup-entry.ts        # standalone install/config script
+│   ├── index.ts              # definePluginEntry — plugin runtime (gets shipped)
+│   └── setup-entry.ts        # dev-only host-CLI bootstrap; NOT shipped (see below)
 ├── types/
 │   └── openclaw-plugin-sdk.d.ts  # ambient stub so it typechecks standalone
 └── skills/granola/           # symlink → ../../skills/granola (the canonical skill doc)
 ```
+
+The published npm tarball excludes `src/` and `dist/setup-entry.*` — only `dist/index.js` (plus `.d.ts`/`.js.map`), `openclaw.plugin.json`, `skills/`, and this README ship. OpenClaw 2026.4+ blocks plugin installs that contain `child_process` calls, and `setup-entry.ts` uses them to detect/install the host CLI. Keeping setup-entry as a dev tool (in the repo, not in the package) keeps the published runtime alarm-free; the host-CLI install is a one-time manual step in the [Prerequisites](#prerequisites-one-time-per-host-before-installing-the-plugin) section above.
 
 ## Building from source
 

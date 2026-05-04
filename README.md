@@ -196,17 +196,19 @@ cat >> ~/.npmrc <<'EOF'
 EOF
 chmod 600 ~/.npmrc
 
-# 2. Install the plugin
-openclaw plugins install npm:@alavida-ai/granola-openclaw
+# 2. Install the granola host CLI (the plugin's skill calls it)
+uv tool install git+https://github.com/alavida-ai/granola-cli
 
-# 3. Run setup (verifies/installs the granola host CLI, checks GRANOLA_API_KEY)
-cd ~/.openclaw/plugins/granola   # path may vary
-npx tsx src/setup-entry.ts
+# 3. Wire GRANOLA_API_KEY into ~/.openclaw/openclaw.json
+#    (see "OpenClaw deployment" above for the plaintext vs SecretRef shape)
 
-# 4. Wire GRANOLA_API_KEY into ~/.openclaw/openclaw.json (see "OpenClaw deployment" above)
+# 4. Install the plugin from GitHub Packages
+openclaw plugins install @alavida-ai/granola-openclaw
+
+# 5. Restart the gateway so the plugin + skill are picked up
 openclaw gateway restart
 
-# Updating later: one-liner — no clone, no rebuild
+# Updating later: one-liner
 openclaw plugins update @alavida-ai/granola-openclaw && openclaw gateway restart
 ```
 
