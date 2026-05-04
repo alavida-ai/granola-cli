@@ -186,16 +186,31 @@ The plugin source lives at [`plugins/claude-code/`](./plugins/claude-code/) — 
 
 ### OpenClaw (plugin)
 
-```bash
-# 1. Install the plugin
-openclaw plugins install git:github.com/alavida-ai/granola-cli#plugins/openclaw
+The plugin is published to **GitHub Packages** as `@alavida-ai/granola-openclaw`. Each OpenClaw host needs a one-time auth setup, after which install and update are one-liners.
 
-# 2. Run setup (verifies/installs the granola CLI host binary, checks GRANOLA_API_KEY)
+```bash
+# 1. One-time per host: configure GitHub Packages auth (PAT with `read:packages` scope)
+cat >> ~/.npmrc <<'EOF'
+@alavida-ai:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_PAT_HERE
+EOF
+chmod 600 ~/.npmrc
+
+# 2. Install the plugin
+openclaw plugins install npm:@alavida-ai/granola-openclaw
+
+# 3. Run setup (verifies/installs the granola host CLI, checks GRANOLA_API_KEY)
 cd ~/.openclaw/plugins/granola   # path may vary
 npx tsx src/setup-entry.ts
+
+# 4. Wire GRANOLA_API_KEY into ~/.openclaw/openclaw.json (see "OpenClaw deployment" above)
+openclaw gateway restart
+
+# Updating later: one-liner — no clone, no rebuild
+openclaw plugins update @alavida-ai/granola-openclaw && openclaw gateway restart
 ```
 
-The plugin source lives at [`plugins/openclaw/`](./plugins/openclaw/) — `package.json` (with the `openclaw` block), `openclaw.plugin.json`, `src/{index,setup-entry}.ts`, and a `skills/granola/` symlink to the canonical skill at the repo root.
+Plugin source: [`plugins/openclaw/`](./plugins/openclaw/) — `package.json` (with the `openclaw` block), `openclaw.plugin.json`, `src/{index,setup-entry}.ts`, and a `skills/granola/` symlink to the canonical skill at the repo root. See [`plugins/openclaw/README.md`](./plugins/openclaw/README.md) for the release flow (tag → CI publishes to GitHub Packages).
 
 ### Legacy: `granola skill install` (deprecated)
 
