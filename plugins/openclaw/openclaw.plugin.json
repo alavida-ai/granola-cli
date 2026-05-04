@@ -1,0 +1,21 @@
+{
+  "id": "granola",
+  "name": "granola",
+  "description": "Auto-loads the granola skill into OpenClaw agent bootstrap so agents can read meeting notes, AI summaries, transcripts, and folders from Granola.ai via the granola CLI.",
+  "contracts": {
+    "tools": []
+  },
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "agentId": {
+        "type": "string",
+        "description": "Optional agent identity (consumed by future per-agent permission filtering; ignored today)."
+      }
+    }
+  }
+}

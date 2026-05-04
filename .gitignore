@@ -29,3 +29,7 @@ build/
 
 # local Claude Code state (settings + worktrees)
 .claude/
+
+# OpenClaw plugin build artifacts
+plugins/openclaw/node_modules/
+plugins/openclaw/dist/
