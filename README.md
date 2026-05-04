@@ -166,33 +166,45 @@ uv run granola --help
 
 ## Bundled skill
 
-The CLI ships with a Claude/OpenClaw skill that teaches the agent when and how to use `granola ...`. The skill source is at `skills/granola/` in this repo: `SKILL.md` plus `references/{auth,notes,folders}.md`. Bundled into the wheel via Hatch's `force-include` and shipped with every install.
+The CLI ships with a Claude/OpenClaw skill that teaches the agent when and how to use `granola ...`. The skill source is at `skills/granola/` in this repo: `SKILL.md` plus `references/{notes,folders}.md`.
 
-### Install the skill
+The skill is distributed as a **plugin** for each agentic runtime — pick the path that matches your host:
+
+### Claude Code (plugin)
 
 ```bash
-# Claude Code (user-scope, recommended for personal use)
-granola skill install --target ~/.claude/skills/granola
+# 1. Add this repo as a plugin marketplace
+claude plugin marketplace add github:alavida-ai/granola-cli
 
-# Claude Code (project-scope)
-granola skill install --target $(pwd)/.claude/skills/granola
-
-# OpenClaw default — host-shared
-granola skill install                         # → ~/.openclaw/skills/granola
-
-# OpenClaw workspace-scope (highest precedence)
-granola skill install --workspace ~/wkdir     # → ~/wkdir/skills/granola
+# 2. Install the plugin
+claude plugin install granola@granola-cli
 ```
 
-After install, restart your agent host (Claude Code or OpenClaw) so it picks up the skill.
+A fresh Claude Code session will discover the `granola` skill automatically. The agent invokes it on demand when a user asks about meetings, notes, or transcripts.
 
-### Updating
+The plugin source lives at [`plugins/claude-code/`](./plugins/claude-code/) — `.claude-plugin/plugin.json` plus a `skills/granola/` symlink to the canonical skill at the repo root.
 
-The CLI binary upgrade alone doesn't re-copy the skill — `granola skill install --force` does.
+### OpenClaw (plugin)
 
 ```bash
-uv tool install --upgrade git+https://github.com/alavida-ai/granola-cli
-granola skill install --target ~/.claude/skills/granola --force
+# 1. Install the plugin
+openclaw plugins install git:github.com/alavida-ai/granola-cli#plugins/openclaw
+
+# 2. Run setup (verifies/installs the granola CLI host binary, checks GRANOLA_API_KEY)
+cd ~/.openclaw/plugins/granola   # path may vary
+npx tsx src/setup-entry.ts
+```
+
+The plugin source lives at [`plugins/openclaw/`](./plugins/openclaw/) — `package.json` (with the `openclaw` block), `openclaw.plugin.json`, `src/{index,setup-entry}.ts`, and a `skills/granola/` symlink to the canonical skill at the repo root.
+
+### Legacy: `granola skill install` (deprecated)
+
+Earlier releases distributed the skill via a CLI subcommand that copied `skills/granola/` onto disk. That path is **deprecated** in favour of the plugin install paths above. The subcommand still works for one release to give downstream consumers time to migrate; it will be removed in a follow-up. New deployments should use the plugin paths.
+
+```bash
+# Deprecated — use the plugin install paths above instead.
+granola skill install --target ~/.claude/skills/granola
+granola skill install --workspace ~/wkdir     # → ~/wkdir/skills/granola
 ```
 
 ## API surface (Granola public API)
