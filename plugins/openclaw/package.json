@@ -1,14 +1,14 @@
 {
-  "name": "@alavida-ai/granola-openclaw",
-  "version": "0.1.1",
+  "name": "@alavida-ai/granola-plugin-openclaw",
+  "version": "0.2.0",
   "description": "OpenClaw plugin: ships the granola skill and ensures the granola host CLI + GRANOLA_API_KEY are wired up for read access to Granola.ai meeting notes.",
   "type": "module",
   "private": false,
   "license": "UNLICENSED",
-  "homepage": "https://github.com/alavida-ai/granola-cli",
+  "homepage": "https://github.com/alavida-ai/granola-plugin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alavida-ai/granola-cli.git",
+    "url": "https://github.com/alavida-ai/granola-plugin.git",
     "directory": "plugins/openclaw"
   },
   "main": "dist/index.js",
