@@ -15,7 +15,15 @@ import typer
 import granola_cli
 from granola_cli.commands._common import err_console
 
-app = typer.Typer(help="Bundled Claude/OpenClaw skill management.", no_args_is_help=True)
+app = typer.Typer(
+    help=(
+        "[DEPRECATED] Bundled skill management. Prefer the plugin install paths: "
+        "`claude plugin install granola@granola-cli` for Claude Code, "
+        "`openclaw plugins install git:github.com/alavida-ai/granola-cli#plugins/openclaw` "
+        "for OpenClaw. This command stays for one release, then goes."
+    ),
+    no_args_is_help=True,
+)
 
 # Path inside the package where bundled skill files live (force-included via pyproject).
 _BUNDLED_PARTS = ("_skills", "granola")
@@ -110,7 +118,16 @@ def install(
         typer.Option("--force", help="Overwrite an existing installation."),
     ] = False,
 ):
-    """Install the bundled skill onto disk.
+    """[DEPRECATED] Install the bundled skill onto disk.
+
+    Prefer the plugin install paths instead:
+
+      Claude Code:  claude plugin marketplace add github:alavida-ai/granola-cli
+                    claude plugin install granola@granola-cli
+      OpenClaw:     openclaw plugins install git:github.com/alavida-ai/granola-cli#plugins/openclaw
+
+    This command remains for one release for backwards compatibility; it will
+    be removed in a follow-up.
 
     Resolution order:
       1. --target <path>            install to <path> exactly
@@ -128,6 +145,12 @@ def install(
       ~/.claude/skills/granola                      user-scope (recommended)
       <project>/.claude/skills/granola              project-scope
     """
+    err_console.print(
+        "[yellow]`granola skill install` is deprecated.[/yellow] "
+        "Use the plugin install paths instead — see "
+        "https://github.com/alavida-ai/granola-cli#bundled-skill"
+    )
+
     dest = _resolve_target(workspace, target)
 
     if dest.exists() and not force:

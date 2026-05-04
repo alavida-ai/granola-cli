@@ -1,0 +1,10 @@
+{
+  "name": "granola",
+  "version": "0.1.0",
+  "description": "Auto-loads the Granola skill into Claude Code sessions — agents can read meeting notes, AI summaries, and transcripts from Granola.ai via the granola CLI.",
+  "author": {
+    "name": "Alavida",
+    "email": "chicote@alavida.ai"
+  },
+  "homepage": "https://github.com/alavida-ai/granola-cli"
+}
