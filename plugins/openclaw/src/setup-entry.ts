@@ -85,7 +85,7 @@ function ensureGranolaInstalled(dryRun: boolean): void {
     return;
   }
   const cmd =
-    "uv tool install --from git+https://github.com/alavida-ai/granola-cli granola-cli";
+    "uv tool install --from git+https://github.com/alavida-ai/granola-plugin granola-cli";
   if (dryRun) {
     console.log(`[dry-run] would run: ${cmd}`);
     return;
@@ -137,7 +137,7 @@ function checkApiKey(): void {
       "    deployment's standard secret-injection path (systemd EnvironmentFile,",
       "    Fly secrets, Docker secret, k8s envFrom secretRef, etc.).",
       "",
-      "  See https://github.com/alavida-ai/granola-cli#openclaw-deployment for the full table.",
+      "  See https://github.com/alavida-ai/granola-plugin#openclaw-deployment for the full table.",
       "",
     ].join("\n"),
   );

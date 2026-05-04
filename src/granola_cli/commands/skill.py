@@ -18,8 +18,8 @@ from granola_cli.commands._common import err_console
 app = typer.Typer(
     help=(
         "[DEPRECATED] Bundled skill management. Prefer the plugin install paths: "
-        "`claude plugin install granola@granola-cli` for Claude Code, "
-        "`openclaw plugins install git:github.com/alavida-ai/granola-cli#plugins/openclaw` "
+        "`claude plugin install granola@granola-plugin` for Claude Code, "
+        "`openclaw plugins install @alavida-ai/granola-plugin-openclaw` "
         "for OpenClaw. This command stays for one release, then goes."
     ),
     no_args_is_help=True,
@@ -59,7 +59,7 @@ def _bundled_skill_path() -> Iterator[Path]:
             f"[red]Bundled skill files not found at {src_path}.[/red]\n"
             f"Also looked for dev fallback at {candidate}.\n"
             "Reinstall via "
-            "`uv tool install --upgrade git+https://github.com/alavida-ai/granola-cli`."
+            "`uv tool install --upgrade git+https://github.com/alavida-ai/granola-plugin`."
         )
         raise typer.Exit(2)
 
@@ -122,9 +122,10 @@ def install(
 
     Prefer the plugin install paths instead:
 
-      Claude Code:  claude plugin marketplace add github:alavida-ai/granola-cli
-                    claude plugin install granola@granola-cli
-      OpenClaw:     openclaw plugins install git:github.com/alavida-ai/granola-cli#plugins/openclaw
+      Claude Code:  claude plugin marketplace add github:alavida-ai/granola-plugin
+                    claude plugin install granola@granola-plugin
+      OpenClaw:     openclaw plugins install @alavida-ai/granola-plugin-openclaw
+                    (after configuring ~/.npmrc auth — see the README's OpenClaw section)
 
     This command remains for one release for backwards compatibility; it will
     be removed in a follow-up.
@@ -148,7 +149,7 @@ def install(
     err_console.print(
         "[yellow]`granola skill install` is deprecated.[/yellow] "
         "Use the plugin install paths instead — see "
-        "https://github.com/alavida-ai/granola-cli#bundled-skill"
+        "https://github.com/alavida-ai/granola-plugin#bundled-skill"
     )
 
     dest = _resolve_target(workspace, target)

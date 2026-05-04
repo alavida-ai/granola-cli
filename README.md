@@ -1,6 +1,6 @@
-# granola-cli
+# granola-plugin
 
-Alavida's CLI for [Granola](https://granola.ai) — read meeting notes, AI summaries, transcripts, and folders, designed for AI agents.
+Alavida's Granola integration — a CLI for [Granola](https://granola.ai) — read meeting notes, AI summaries, transcripts, and folders, designed for AI agents.
 
 Python. Read-only (Granola's public API exposes no write endpoints). Bearer-token auth via a personal key the user generates in the Granola desktop app, exposed to the CLI as `GRANOLA_API_KEY`.
 
@@ -11,7 +11,7 @@ Requires [`uv`](https://docs.astral.sh/uv/) and Python 3.12+. `uv` will fetch a 
 Install the CLI as a global tool:
 
 ```bash
-uv tool install git+https://github.com/alavida-ai/granola-cli
+uv tool install git+https://github.com/alavida-ai/granola-plugin
 ```
 
 This puts a `granola` binary on your PATH (in `~/.local/bin` by default). If `granola` isn't found after install, run `uv tool update-shell` and restart your shell.
@@ -19,7 +19,7 @@ This puts a `granola` binary on your PATH (in `~/.local/bin` by default). If `gr
 Upgrade later with:
 
 ```bash
-uv tool install --upgrade git+https://github.com/alavida-ai/granola-cli
+uv tool install --upgrade git+https://github.com/alavida-ai/granola-plugin
 ```
 
 Uninstall with `uv tool uninstall granola-cli`.
@@ -158,8 +158,8 @@ Or bake the value into your custom sandbox image. Most personal setups don't san
 ## Develop
 
 ```bash
-git clone https://github.com/alavida-ai/granola-cli
-cd granola-cli
+git clone https://github.com/alavida-ai/granola-plugin
+cd granola-plugin
 uv sync
 uv run granola --help
 ```
@@ -174,10 +174,10 @@ The skill is distributed as a **plugin** for each agentic runtime — pick the p
 
 ```bash
 # 1. Add this repo as a plugin marketplace
-claude plugin marketplace add github:alavida-ai/granola-cli
+claude plugin marketplace add github:alavida-ai/granola-plugin
 
 # 2. Install the plugin
-claude plugin install granola@granola-cli
+claude plugin install granola@granola-plugin
 ```
 
 A fresh Claude Code session will discover the `granola` skill automatically. The agent invokes it on demand when a user asks about meetings, notes, or transcripts.
@@ -186,7 +186,7 @@ The plugin source lives at [`plugins/claude-code/`](./plugins/claude-code/) — 
 
 ### OpenClaw (plugin)
 
-The plugin is published to **GitHub Packages** as `@alavida-ai/granola-openclaw`. Each OpenClaw host needs a one-time auth setup, after which install and update are one-liners.
+The plugin is published to **GitHub Packages** as `@alavida-ai/granola-plugin-openclaw`. Each OpenClaw host needs a one-time auth setup, after which install and update are one-liners.
 
 ```bash
 # 1. One-time per host: configure GitHub Packages auth (PAT with `read:packages` scope)
@@ -197,19 +197,19 @@ EOF
 chmod 600 ~/.npmrc
 
 # 2. Install the granola host CLI (the plugin's skill calls it)
-uv tool install git+https://github.com/alavida-ai/granola-cli
+uv tool install git+https://github.com/alavida-ai/granola-plugin
 
 # 3. Wire GRANOLA_API_KEY into ~/.openclaw/openclaw.json
 #    (see "OpenClaw deployment" above for the plaintext vs SecretRef shape)
 
 # 4. Install the plugin from GitHub Packages
-openclaw plugins install @alavida-ai/granola-openclaw
+openclaw plugins install @alavida-ai/granola-plugin-openclaw
 
 # 5. Restart the gateway so the plugin + skill are picked up
 openclaw gateway restart
 
 # Updating later: one-liner
-openclaw plugins update @alavida-ai/granola-openclaw && openclaw gateway restart
+openclaw plugins update @alavida-ai/granola-plugin-openclaw && openclaw gateway restart
 ```
 
 Plugin source: [`plugins/openclaw/`](./plugins/openclaw/) — `package.json` (with the `openclaw` block), `openclaw.plugin.json`, `src/{index,setup-entry}.ts`, and a `skills/granola/` symlink to the canonical skill at the repo root. See [`plugins/openclaw/README.md`](./plugins/openclaw/README.md) for the release flow (tag → CI publishes to GitHub Packages).

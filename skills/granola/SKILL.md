@@ -1,8 +1,8 @@
 ---
 name: granola
 description: Granola — read meeting notes, AI summaries, transcripts, and folder structure from Granola.ai. Use whenever the user asks about meetings, what was discussed, who said what, or summaries of recent calls.
-homepage: https://github.com/alavida-ai/granola-cli
-metadata: {"openclaw":{"emoji":"🥣","homepage":"https://github.com/alavida-ai/granola-cli","os":["darwin","linux"],"requires":{"bins":["granola"],"env":["GRANOLA_API_KEY"]},"primaryEnv":"GRANOLA_API_KEY","install":[{"id":"uv","kind":"uv","package":"git+https://github.com/alavida-ai/granola-cli","bins":["granola"],"label":"Install granola-cli (uv)"}]}}
+homepage: https://github.com/alavida-ai/granola-plugin
+metadata: {"openclaw":{"emoji":"🥣","homepage":"https://github.com/alavida-ai/granola-plugin","os":["darwin","linux"],"requires":{"bins":["granola"],"env":["GRANOLA_API_KEY"]},"primaryEnv":"GRANOLA_API_KEY","install":[{"id":"uv","kind":"uv","package":"git+https://github.com/alavida-ai/granola-plugin","bins":["granola"],"label":"Install granola-cli (uv)"}]}}
 ---
 
 # Granola
@@ -24,7 +24,7 @@ Trigger when the user asks anything about meetings or call notes:
 - [`./references/notes.md`](./references/notes.md) — `granola notes list | read`. List filters, the markdown vs text summary distinction, transcript inclusion.
 - [`./references/folders.md`](./references/folders.md) — `granola folders list`. Folder hierarchy via `parent_folder_id`.
 
-If `granola whoami` ever exits 1 with `GRANOLA_API_KEY not set`, the deployment is missing the env var — that's an operator/deployer fix, not an agent fix. Relay the CLI's stderr message to the user and point them at the [README](https://github.com/alavida-ai/granola-cli#openclaw-deployment) for setup.
+If `granola whoami` ever exits 1 with `GRANOLA_API_KEY not set`, the deployment is missing the env var — that's an operator/deployer fix, not an agent fix. Relay the CLI's stderr message to the user and point them at the [README](https://github.com/alavida-ai/granola-plugin#openclaw-deployment) for setup.
 
 ## Quick reference
 

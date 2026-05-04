@@ -6,7 +6,7 @@ Auto-loads the [granola skill](../../skills/granola) into the OpenClaw agent run
 
 ## How it works
 
-1. The host has the `granola` host CLI installed (a Python tool installed globally via `uv tool install git+https://github.com/alavida-ai/granola-cli`) and `GRANOLA_API_KEY` set in the OpenClaw gateway's process environment.
+1. The host has the `granola` host CLI installed (a Python tool installed globally via `uv tool install git+https://github.com/alavida-ai/granola-plugin`) and `GRANOLA_API_KEY` set in the OpenClaw gateway's process environment.
 2. The plugin bundles `skills/granola/` (a symlink to the canonical skill at the repo root). OpenClaw auto-discovers plugin skills on load and exposes the granola skill to every agent that's allowed to see it.
 3. When the user asks about meetings, the agent triggers the skill, which instructs it to call `granola notes list | read` etc. The CLI hits Granola's public API on the user's behalf.
 
@@ -14,7 +14,7 @@ This plugin owns step (2). The setup script wires step (1) — installing the ho
 
 ## Install
 
-The plugin is published as a private npm package on **GitHub Packages** under `@alavida-ai/granola-openclaw`. Distribution is one-time auth-config per host, then a one-liner per install/update.
+The plugin is published as a private npm package on **GitHub Packages** under `@alavida-ai/granola-plugin-openclaw`. Distribution is one-time auth-config per host, then a one-liner per install/update.
 
 ### One-time, per host: configure GitHub Packages auth
 
@@ -40,7 +40,7 @@ The plugin loads the granola skill, which calls the `granola` host CLI. That CLI
 
 ```bash
 # 1. Install the granola host CLI (Python tool, ~10 seconds)
-uv tool install git+https://github.com/alavida-ai/granola-cli
+uv tool install git+https://github.com/alavida-ai/granola-plugin
 
 # 2. Wire GRANOLA_API_KEY into ~/.openclaw/openclaw.json
 #    See the granola README's "OpenClaw deployment" section for both shapes —
@@ -52,7 +52,7 @@ uv tool install git+https://github.com/alavida-ai/granola-cli
 
 ```bash
 # Install the plugin from GitHub Packages (resolves via ~/.npmrc above)
-openclaw plugins install @alavida-ai/granola-openclaw
+openclaw plugins install @alavida-ai/granola-plugin-openclaw
 
 # Restart the gateway so the plugin and skill are picked up
 openclaw gateway restart
@@ -61,7 +61,7 @@ openclaw gateway restart
 ### Updating
 
 ```bash
-openclaw plugins update @alavida-ai/granola-openclaw
+openclaw plugins update @alavida-ai/granola-plugin-openclaw
 # or update everything at once:
 openclaw plugins update --all
 
@@ -138,7 +138,7 @@ The workflow:
 3. Runs typecheck + build
 4. Publishes to GitHub Packages using the auto-provided `GITHUB_TOKEN` (no secrets to configure)
 
-Hosts on the new version: `openclaw plugins update @alavida-ai/granola-openclaw && openclaw gateway restart`.
+Hosts on the new version: `openclaw plugins update @alavida-ai/granola-plugin-openclaw && openclaw gateway restart`.
 
 ## Tracked in
 

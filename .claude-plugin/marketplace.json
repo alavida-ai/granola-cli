@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
-  "name": "granola-cli",
-  "description": "Single-plugin marketplace for the granola Claude Code plugin while it lives in this repo. Will move under the Alavida monorepo / marketplace once granola-cli graduates.",
+  "name": "granola-plugin",
+  "description": "Single-plugin marketplace for the granola Claude Code plugin while it lives in this repo. Will move under the Alavida monorepo / marketplace once it graduates.",
   "owner": {
     "name": "Alavida",
     "email": "chicote@alavida.ai"
@@ -11,7 +11,7 @@
       "name": "granola",
       "source": "./plugins/claude-code",
       "description": "Auto-loads the Granola skill — read meeting notes, AI summaries, transcripts, and folders from Granola.ai via the granola CLI.",
-      "homepage": "https://github.com/alavida-ai/granola-cli",
+      "homepage": "https://github.com/alavida-ai/granola-plugin",
       "category": "knowledge-management",
       "tags": ["granola", "meetings", "notes", "agents", "alavida"]
     }
