@@ -1,0 +1,28 @@
+{
+  "name": "@alavida-ai/granola-cli",
+  "version": "0.1.0",
+  "description": "Alavida Granola CLI — read meeting notes, transcripts, and folders from Granola.ai for AI agents.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "bin": {
+    "granola": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@alavida-ai/granola-core": "workspace:*"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

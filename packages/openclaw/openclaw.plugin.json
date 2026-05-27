@@ -1,0 +1,20 @@
+{
+  "id": "granola",
+  "name": "granola",
+  "description": "Read meeting notes, AI summaries, transcripts, and folders from Granola.ai. Read-only — Granola's public API has no write endpoints.",
+  "skills": ["./skills"],
+  "contracts": {
+    "tools": ["list_notes", "read_note", "list_folders"]
+  },
+  "activation": { "onStartup": true },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "granolaApiKey": {
+        "type": "string",
+        "description": "Granola API key (grn_...). If unset, falls back to GRANOLA_API_KEY env var."
+      }
+    }
+  }
+}
