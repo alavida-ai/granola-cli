@@ -1,0 +1,188 @@
+{
+  "info": {
+    "name": "Granola API",
+    "description": "Every endpoint the @alavida-ai/granola-core SDK uses. Set the `GRANOLA_API_KEY` collection variable to your personal key (`grn_…`) before sending requests. All endpoints are read-only — Granola's public API exposes no write endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "granola-001"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{GRANOLA_API_KEY}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "https://public-api.granola.ai", "type": "string" },
+    { "key": "GRANOLA_API_KEY", "value": "", "type": "string", "description": "Personal API key (`grn_…`). Generate one in the Granola desktop app: Settings → API → Create new key." },
+    { "key": "NOTE_ID", "value": "", "type": "string", "description": "Replace with a real note id — get one from `Notes > List notes (basic)`. Pattern: `not_<14 chars>`." },
+    { "key": "CURSOR", "value": "", "type": "string", "description": "Opaque pagination cursor from a prior response's `cursor` field." },
+    { "key": "AFTER_DATE", "value": "2026-04-01T00:00:00Z", "type": "string", "description": "ISO-8601 lower bound for date-filter examples." },
+    { "key": "BEFORE_DATE", "value": "2026-05-01T00:00:00Z", "type": "string", "description": "ISO-8601 upper bound for date-filter examples." }
+  ],
+  "item": [
+    {
+      "name": "1. Notes",
+      "description": "List and fetch meeting notes. Read-only.",
+      "item": [
+        {
+          "name": "GET /v1/notes — list notes (basic)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes?page_size=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes"],
+              "query": [
+                { "key": "page_size", "value": "10", "description": "1–30. Granola's API max is 30." }
+              ]
+            },
+            "description": "10 most recent notes, newest first. Returns `{notes: [...], hasMore: bool, cursor: string|null}`. Each note is a NoteSummary (id, title, owner, created_at, updated_at). Used by SDK's `client.notes.list({ pageSize: 10 })`."
+          }
+        },
+        {
+          "name": "GET /v1/notes — list notes (date range)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes?page_size=30&created_after={{AFTER_DATE}}&created_before={{BEFORE_DATE}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes"],
+              "query": [
+                { "key": "page_size", "value": "30" },
+                { "key": "created_after", "value": "{{AFTER_DATE}}", "description": "ISO-8601 lower bound on created_at." },
+                { "key": "created_before", "value": "{{BEFORE_DATE}}", "description": "ISO-8601 upper bound on created_at." }
+              ]
+            },
+            "description": "Notes created within a date range. Useful for daily/weekly digests. Used by SDK's `client.notes.list({ pageSize, createdAfter, createdBefore })`."
+          }
+        },
+        {
+          "name": "GET /v1/notes — list notes (incremental sync via updated_after)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes?page_size=30&updated_after={{AFTER_DATE}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes"],
+              "query": [
+                { "key": "page_size", "value": "30" },
+                { "key": "updated_after", "value": "{{AFTER_DATE}}", "description": "ISO-8601 lower bound on updated_at." }
+              ]
+            },
+            "description": "Notes whose `updated_at` is on/after a watermark — the standard shape for an incremental sync job. Pair with a stored watermark from the last successful run. Used by SDK's `client.notes.list({ updatedAfter })`."
+          }
+        },
+        {
+          "name": "GET /v1/notes — list notes (resume from cursor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes?page_size=30&cursor={{CURSOR}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes"],
+              "query": [
+                { "key": "page_size", "value": "30" },
+                { "key": "cursor", "value": "{{CURSOR}}", "description": "Opaque cursor from a previous response. Set the CURSOR collection variable first." }
+              ]
+            },
+            "description": "Fetch the next page. Set the `CURSOR` collection variable to the `cursor` field from a previous response. Used by SDK's `client.notes.list({ cursor })` (or `client.notes.iterate({...})` under the hood)."
+          }
+        },
+        {
+          "name": "GET /v1/notes/{id} — read note (summary only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes/{{NOTE_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes", "{{NOTE_ID}}"]
+            },
+            "description": "One note: id, title, owner, web_url, created_at/updated_at, attendees, calendar_event, folder_membership, summary_text, summary_markdown. Transcript is omitted. Used by SDK's `client.notes.get({ noteId })`."
+          }
+        },
+        {
+          "name": "GET /v1/notes/{id} — read note + transcript",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes/{{NOTE_ID}}?include=transcript",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes", "{{NOTE_ID}}"],
+              "query": [
+                { "key": "include", "value": "transcript", "description": "Opt in to the transcript array. Can be large; omit when you only need the summary." }
+              ]
+            },
+            "description": "Same as above plus a `transcript: [{speaker, text, start_time, end_time}, ...]` array. Speaker labels depend on recording source — desktop = `microphone` / `speaker` channels (Me/Them), iPhone face-to-face = real per-person diarization. Used by SDK's `client.notes.get({ noteId, includeTranscript: true })`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Folders",
+      "description": "Folder catalog. Folders are tag-like, not directories — see `folder_membership` on `GET /v1/notes/{id}` for the note-to-folder mapping.",
+      "item": [
+        {
+          "name": "GET /v1/folders — list folders (basic)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/folders?page_size=30",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "folders"],
+              "query": [
+                { "key": "page_size", "value": "30", "description": "1–30." }
+              ]
+            },
+            "description": "All folders (paginated). Each folder has `id`, `name`, `parent_folder_id` (null for top-level), `created_at`, `updated_at`. Build the tree client-side. Used by SDK's `client.folders.list({ pageSize: 30 })`."
+          }
+        },
+        {
+          "name": "GET /v1/folders — list folders (resume from cursor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/folders?page_size=30&cursor={{CURSOR}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "folders"],
+              "query": [
+                { "key": "page_size", "value": "30" },
+                { "key": "cursor", "value": "{{CURSOR}}", "description": "Opaque cursor from a previous response." }
+              ]
+            },
+            "description": "Next page of folders. Used by SDK's `client.folders.list({ cursor })`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Identity (no /me endpoint)",
+      "description": "Granola exposes no /me. Identity is inferred from the `owner.email` field across recent notes — the most frequent owner is the likely caller. Personal keys also see notes shared by collaborators, so the result is a probabilistic guess.",
+      "item": [
+        {
+          "name": "GET /v1/notes?page_size=30 — owner-frequency sample",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/notes?page_size=30",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "notes"],
+              "query": [
+                { "key": "page_size", "value": "30" }
+              ]
+            },
+            "description": "Sample 30 recent notes. Tally `owner.email` client-side; the most frequent owner is 'likely you'. Implemented in SDK as `inferIdentity(client, sample = 30)` (returns `{ sampleSize, likelyYou, allOwners }`). The CLI's `granola whoami` is a thin wrapper around this."
+          }
+        }
+      ]
+    }
+  ]
+}

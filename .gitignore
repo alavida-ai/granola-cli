@@ -1,13 +1,9 @@
-.venv/
-.venv
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
-.pytest_cache/
-.ruff_cache/
+# Build output
+**/dist/
+**/*.tsbuildinfo
+
+# Node
+node_modules/
 
 # secrets — never commit
 .env
@@ -17,19 +13,9 @@ build/
 .firecrawl/
 .DS_Store
 
-# secrets & local state
-.env
-.env.local
-.granola-cli/
+# local Claude Code state (settings + worktrees)
+.claude/
 
 # editors
 .vscode/
 .idea/
-.DS_Store
-
-# local Claude Code state (settings + worktrees)
-.claude/
-
-# OpenClaw plugin build artifacts
-plugins/openclaw/node_modules/
-plugins/openclaw/dist/

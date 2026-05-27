@@ -1,0 +1,15 @@
+{
+  "workspace": {
+    "id": "ffcfa011-a411-431a-b5dc-998f32f9634e"
+  },
+  "entities": {
+    "environments": [],
+    "flows": [],
+    "globals": [],
+    "mocks": [],
+    "specs": [],
+    "collections": [
+      "../granola.postman_collection.json"
+    ]
+  }
+}
