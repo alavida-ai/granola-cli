@@ -1,6 +1,6 @@
 {
   "name": "@alavida-ai/granola-plugin-openclaw",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "OpenClaw plugin: native tools for reading meeting notes, summaries, transcripts, and folders from Granola.ai.",
   "type": "module",
   "license": "UNLICENSED",

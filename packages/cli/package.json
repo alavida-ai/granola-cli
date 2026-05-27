@@ -1,6 +1,6 @@
 {
   "name": "@alavida-ai/granola-cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Alavida Granola CLI — read meeting notes, transcripts, and folders from Granola.ai for AI agents.",
   "type": "module",
   "license": "UNLICENSED",
