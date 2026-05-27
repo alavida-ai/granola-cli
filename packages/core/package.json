@@ -1,6 +1,6 @@
 {
   "name": "@alavida-ai/granola-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Granola.ai public API client. Zero runtime dependencies — uses Node's native fetch.",
   "type": "module",
   "license": "UNLICENSED",
