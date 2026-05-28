@@ -48,22 +48,24 @@ The OpenClaw plugin (`@alavida-ai/granola-plugin-openclaw`) registers three nati
 
 ### Install in an OpenClaw agent
 
-All three packages publish to **GitHub Packages** under the `@alavida-ai` scope. Consumers need a `.npmrc` pointing at GitHub Packages plus a GitHub Personal Access Token (classic) with `read:packages` scope:
+OpenClaw plugins are installed via `openclaw plugins install npm:<package>` — not `pnpm add` / `npm install`. OpenClaw runs npm against a managed plugin npm root with `--ignore-scripts` for safety. Npm specs are registry-only (exact version or dist-tag; semver ranges and git/url/file specs are rejected — see the [OpenClaw plugin install docs](https://github.com/openclaw/openclaw/blob/main/docs/cli/plugins.md)).
+
+All three packages publish to **GitHub Packages** under the `@alavida-ai` scope. Since OpenClaw shells out to npm, scoped-registry auth has to live somewhere npm picks it up — `~/.npmrc` is the simplest:
 
 ```ini
-# .npmrc (in your OpenClaw agent project, NOT committed)
+# ~/.npmrc
 @alavida-ai:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GHP_READ_PACKAGES_TOKEN}
 ```
 
-Export the token in your shell (or your secret manager / CI env), then install:
+Export a GitHub PAT (classic) with `read:packages` scope in your shell (or your secret manager / CI env), then install via OpenClaw:
 
 ```bash
-export GHP_READ_PACKAGES_TOKEN=ghp_xxx...   # PAT with read:packages
-pnpm add @alavida-ai/granola-plugin-openclaw
+export GHP_READ_PACKAGES_TOKEN=ghp_xxx...
+openclaw plugins install npm:@alavida-ai/granola-plugin-openclaw@0.4.0
 ```
 
-Then wire it into your OpenClaw plugin config and set `GRANOLA_API_KEY` (or pass `granolaApiKey` in `pluginConfig`). Restart the gateway — the plugin self-registers `list_notes`, `read_note`, `list_folders` on startup.
+Set `GRANOLA_API_KEY` (or pass `granolaApiKey` in `pluginConfig`) and restart the gateway — the plugin self-registers `list_notes`, `read_note`, `list_folders` on startup.
 
 ## Claude Code deployment
 
